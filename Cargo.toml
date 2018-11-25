@@ -1,0 +1,22 @@
+[package]
+
+name = "rust-diskinfo"
+version = "0.0.1"
+authors = ["Alexander Eremin <alexander.r.eremin@gmail.com>"]
+description = "illumos diskinfo utility implemented in Rust."
+homepage = "https://github.com/alhazred/rust-diskinfo"
+repository = "https://github.com/alhazred/rust-diskinfo"
+readme = "README.md"
+keywords = ["illumos", "diskinfo", "solaris", "kstat"]
+license = "MIT"
+
+[lib]
+name = "diskinfo"
+
+[dependencies]
+libc = { path = "libc", version = "0.2" }
+# kstat with fixed CharData
+kstat = { path = "./kstat" }
+
+[features]
+unstable = []
