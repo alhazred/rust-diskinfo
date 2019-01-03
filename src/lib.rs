@@ -89,7 +89,7 @@ fn format_ks(m: &KstatNamedData) -> String {
 }
 
 fn get_kstat(sd: &str) -> Vec<KstatData> {
-    let mut kstat_val:String = String::new();
+    let mut _kstat_val:String = String::new();
     let dkerr = format!("{},err", sd);
     let reader = KstatReader::new(None, None, Some(dkerr), None)
         .expect("failed to create kstat reader");
