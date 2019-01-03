@@ -7,7 +7,7 @@ extern crate libc;
 use libc::{ c_int, ioctl };
 
 extern crate kstat;
-use kstat::KstatReader;
+use kstat::{KstatData, KstatReader};
 use kstat::kstat_named::KstatNamedData;
 
 
@@ -88,14 +88,18 @@ fn format_ks(m: &KstatNamedData) -> String {
     tokens[1].to_string()
 }
 
-fn get_kstat(sd: &str, data: &str) -> String {
+fn get_kstat(sd: &str) -> Vec<KstatData> {
     let mut kstat_val:String = String::new();
     let dkerr = format!("{},err", sd);
     let reader = KstatReader::new(None, None, Some(dkerr), None)
         .expect("failed to create kstat reader");
-    let stats = reader.read().expect("failed to read kstats");
-    for stat in stats {
-       kstat_val = format_ks(&stat.data[data]);
+    reader.read().expect("failed to read kstats")
+}
+
+fn get_kstat_value(k: &Vec<KstatData>, field: &str) -> String {
+    let mut kstat_val:String = String::new();
+    for stat in k {
+       kstat_val = format_ks(&stat.data[field]);
       }
     kstat_val
 }
@@ -117,9 +121,10 @@ fn print_disk(path: &str, fname: File, disk: &str) {
             if l.contains(sdnum[0]) && l.contains(tokens[tokens.len()-2]) {
 	        let sdtok: Vec<&str> = l.split(" ").collect();
 	        let sd = format!("sd{}", sdtok[sdtok.len()-2]); 
-	        let serial = get_kstat(&sd, "Serial No");
-	        let product = get_kstat(&sd, "Product");
-	        let vendor = get_kstat(&sd, "Vendor");
+	        let kstats = get_kstat(&sd);
+		let serial = get_kstat_value(&kstats, "Serial No");
+	        let product = get_kstat_value(&kstats, "Product");
+	        let vendor = get_kstat_value(&kstats, "Vendor");
 	        println!("{: <7} {: <23} {: <8} {: <16} {: <20} {:.2?} GiB",
 		    ctype, disk, vendor, product, serial, dksize);
             }
